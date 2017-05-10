@@ -1,16 +1,19 @@
+# Our ui will be a simple gadget page, which
+# simply displays the time in a 'UI' output.
+ui <- miniPage(
+  gadgetTitleBar(
+    "brushthat",
+    left = miniTitleBarButton("run", "Run test", primary = TRUE)
+  ),
+  miniContentPanel(
+    radioButtons("failures", "Failing tests", choices = "No test failures found"),
+    textOutput("status", inline = TRUE)
+  )
+)
+
 # We'll wrap our Shiny Gadget in an addin.
 # Let's call it 'clockAddin()'.
 shine <- function(pkg = ".") {
-  # Our ui will be a simple gadget page, which
-  # simply displays the time in a 'UI' output.
-  ui <- miniPage(
-    gadgetTitleBar("brushthat", left = miniTitleBarButton("run", "Run test", primary = TRUE)),
-    miniContentPanel(
-      radioButtons("failures", "Failing tests", choices = "No test failures found"),
-      textOutput("status", inline = TRUE)
-    )
-  )
-
   server <- function(input, output, session) {
 
     output$status <- renderText({
