@@ -34,11 +34,15 @@ shine <- function(pkg = ".") {
     results <- NULL
     call_stack_df <- NULL
 
-    observe(results <<- filter_results(session, results, input$filter, input$run, pkg))
-
-    observe(call_stack_df <<- fill_call_stack(session, results, as.integer(input$results), pkg))
-
-    observe(navigate_call_stack_entry(call_stack_df, as.numeric(input$call_stack)))
+    observe(results <<- filter_results(
+      session, results, input$filter, input$run, pkg
+    ))
+    observe(call_stack_df <<- fill_call_stack(
+      session, results, as.integer(input$results), pkg
+    ))
+    observe(navigate_call_stack_entry(
+      call_stack_df, as.numeric(input$call_stack)
+    ))
 
     # Listen for 'done' events. When we're finished, we'll
     # insert the current time, and then stop the gadget.
