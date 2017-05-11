@@ -31,17 +31,17 @@ shine <- function(pkg = ".") {
 
   server <- function(input, output, session) {
 
-    results <- NULL
+    run_output <- NULL
     call_stack_df <- NULL
 
-    observe(results <<- filter_results(
-      session, results, input$filter, input$run, pkg
+    observe(run_output <<- filter_results(
+      session, run_output, input$filter, input$run, pkg
     ))
     observe(call_stack_df <<- fill_call_stack(
-      session, results, as.integer(input$results), pkg
+      session, run_output$results, as.integer(input$results), pkg
     ))
     output$message <- renderText(get_result_message(
-      session, results, as.integer(input$results)
+      session, run_output$results, as.integer(input$results)
     ))
 
     observe(navigate_call_stack_entry(
@@ -67,21 +67,21 @@ result_type <- function(result) {
   result_types[ class(result)[[1]] ]
 }
 
-current_run_env <- child_env(NULL)
-
-get_results <- function(results, run, pkg) {
-  if (identical(run, current_run_env$run)) return(results)
-
-  current_run_env$run <- run
+get_run_output <- function(run_output, run, pkg) {
+  if (identical(run, run_output$run)) return(run_output)
 
   reporter <- BrushReporter$new()
   devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
 
-  reporter$get_results()
+  list(
+    run = run,
+    results = reporter$get_results()
+  )
 }
 
-filter_results <- function(session, results, filter, run, pkg) {
-  results <- get_results(results, run, pkg)
+filter_results <- function(session, run_output, filter, run, pkg) {
+  run_output <- get_run_output(run_output, run, pkg)
+  results <- run_output$results
 
   results_class <- map_chr(map(results, class), "[[", 1L)
   show_result <- results_class %in% filter
@@ -100,7 +100,7 @@ filter_results <- function(session, results, filter, run, pkg) {
 
   updateRadioButtons(session, "results", choices = choices)
 
-  results
+  run_output
 }
 
 get_result <- function(results, result_pos) {
