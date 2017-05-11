@@ -1,11 +1,23 @@
-# Our ui will be a simple gadget page, which
-# simply displays the time in a 'UI' output.
+result_types <- c(
+  expectation_success = "\u2713",
+  expectation_failure = "\u2717",
+  expectation_error = "\u2757",
+  expectation_skip = "\u2013",
+  expectation_warning = "\u26a0"
+)
+
 ui <- miniPage(
   gadgetTitleBar(
     "brushthat",
     left = miniTitleBarButton("run", "Run test", primary = TRUE)
   ),
   miniContentPanel(
+    checkboxGroupInput(
+      "filter", "Result types",
+      set_names(names(result_types), result_types),
+      selected = names(result_types)[-1],
+      inline = TRUE
+    ),
     splitLayout(
       radioButtons("results", "Tests", choices = "No tests found"),
       radioButtons("call_stack", "Call stack", choices = "No test selected")
@@ -14,8 +26,6 @@ ui <- miniPage(
   )
 )
 
-# We'll wrap our Shiny Gadget in an addin.
-# Let's call it 'clockAddin()'.
 shine <- function(pkg = ".") {
   pkg <- normalizePath(pkg, winslash = "/")
 
@@ -62,14 +72,7 @@ shine <- function(pkg = ".") {
 }
 
 result_type <- function(result) {
-  switch(class(result)[[1]],
-    expectation_success = "\u2713",
-    expectation_failure = "\u2717",
-    expectation_error = "\u2763",
-    expectation_skip = "\u2013",
-    expectation_warning = "\u26a0",
-    "?"
-  )
+  result_types[ class(result)[[1]] ]
 }
 
 fill_call_stack <- function(session, result, pkg) {
