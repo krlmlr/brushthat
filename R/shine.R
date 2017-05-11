@@ -62,7 +62,14 @@ shine <- function(pkg = ".") {
 }
 
 result_type <- function(result) {
-  toupper(substr(gsub("^expectation_", "", class(result)[[1]]), 1, 1))
+  switch(class(result)[[1]],
+    expectation_success = "\u2713",
+    expectation_failure = "\u2717",
+    expectation_error = "\u2763",
+    expectation_skip = "\u2013",
+    expectation_warning = "\u26a0",
+    "?"
+  )
 }
 
 fill_call_stack <- function(session, result, pkg) {
