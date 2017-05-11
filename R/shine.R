@@ -34,25 +34,9 @@ shine <- function(pkg = ".") {
     results <- NULL
     call_stack_df <- NULL
 
-    output$status <- renderText({
-      reporter <- BrushReporter$new()
-      devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
+    observe(results <<- filter_results(session, results, input$filter, input$run, pkg))
 
-      results <<- reporter$get_results()
-
-      test_names <- paste0(
-        map_chr(results, result_type),
-        ": ",
-        map_chr(results, "[[", "test")
-      )
-      choices <- set_names(seq_along(results), test_names)
-
-      updateRadioButtons(session, "results", choices = choices)
-
-      paste0("Runs: ", input$run)
-    })
-
-    observe(call_stack_df <<- fill_call_stack(session, results[[as.integer(input$results)]], pkg))
+    observe(call_stack_df <<- fill_call_stack(session, results, as.integer(input$results), pkg))
 
     observe(navigate_call_stack_entry(call_stack_df, as.numeric(input$call_stack)))
 
@@ -75,26 +59,71 @@ result_type <- function(result) {
   result_types[ class(result)[[1]] ]
 }
 
-fill_call_stack <- function(session, result, pkg) {
-  if (is.null(result)) return()
+current_run_env <- child_env(NULL)
 
-  srcrefs <- lapply(result$call, attr, "srcref")
-  has_ref <- map_lgl(srcrefs, inherits, "srcref")
-  valid_srcrefs <- srcrefs[has_ref]
-  files <- map_chr(valid_srcrefs, function(x) attr(x, "srcfile")$filename)
-  files <- gsub(paste0(pkg, "/"), "", files)
-  lines <- map_int(valid_srcrefs, function(x) as.vector(x)[1])
-  columns <- map_int(valid_srcrefs, function(x) as.vector(x)[2])
+get_results <- function(results, run, pkg) {
+  if (identical(run, current_run_env$run)) return(results)
 
-  addr <- paste0(files, ":", lines, ":", columns)
-  choices <- set_names(seq_along(addr), addr)
+  current_run_env$run <- run
 
-  updateRadioButtons(session, "call_stack", choices = choices, selected = 1L)
+  reporter <- BrushReporter$new()
+  devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
+
+  reporter$get_results()
+}
+
+filter_results <- function(session, results, filter, run, pkg) {
+  results <- get_results(results, run, pkg)
+
+  results_class <- map_chr(map(results, class), "[[", 1L)
+  show_result <- results_class %in% filter
+  shown_results <- results[show_result]
+
+  if (length(shown_results) == 0L) {
+    choices <- c("No results" = 0)
+  } else {
+    test_names <- paste0(
+      map_chr(shown_results, result_type),
+      ": ",
+      map_chr(shown_results, "[[", "test")
+    )
+    choices <- set_names(which(show_result), test_names)
+  }
+
+  updateRadioButtons(session, "results", choices = choices)
+
+  results
+}
+
+fill_call_stack <- function(session, results, result_pos, pkg) {
+  result <- NULL
+  if (!is.na(result_pos) && result_pos != 0) result <- results[[result_pos]]
+
+  if (is.null(result)) {
+    choices <- c("No result selected" = 1L)
+    files <- NA_character_
+    lines <- NA_integer_
+    columns <- NA_integer_
+  } else {
+    srcrefs <- lapply(result$call, attr, "srcref")
+    has_ref <- map_lgl(srcrefs, inherits, "srcref")
+    valid_srcrefs <- srcrefs[has_ref]
+    files <- map_chr(valid_srcrefs, function(x) attr(x, "srcfile")$filename)
+    files <- gsub(paste0(pkg, "/"), "", files)
+    lines <- map_int(valid_srcrefs, function(x) as.vector(x)[1])
+    columns <- map_int(valid_srcrefs, function(x) as.vector(x)[2])
+
+    addr <- paste0(files, ":", lines, ":", columns)
+    choices <- set_names(seq_along(addr), addr)
+  }
 
   call_stack_df <- data.frame(
     file = files, line = lines, column = columns,
     stringsAsFactors = FALSE
   )
+
+  updateRadioButtons(session, "call_stack", choices = choices, selected = 1L)
+
   navigate_call_stack_entry(call_stack_df, 1L)
   call_stack_df
 }
@@ -102,5 +131,6 @@ fill_call_stack <- function(session, result, pkg) {
 navigate_call_stack_entry <- function(call_stack_df, call_stack_pos) {
   if (is.na(call_stack_pos)) return()
   file_pos <- call_stack_df[call_stack_pos, , drop = FALSE]
+  if (is.na(file_pos$file)) return()
   rstudioapi::navigateToFile(file_pos$file, file_pos$line, file_pos$column)
 }
