@@ -5,6 +5,7 @@ Authors@R: person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r
 Description: What the package does (one paragraph).
 Imports:
     miniUI,
+    rlang,
     shiny
 License: GPL-3
 Encoding: UTF-8

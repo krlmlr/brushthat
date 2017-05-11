@@ -16,7 +16,23 @@ ui <- miniPage(
 shine <- function(pkg = ".") {
   server <- function(input, output, session) {
 
+    results <- NULL
+
     output$status <- renderText({
+      reporter <- BrushReporter$new()
+      devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
+
+      results <<- reporter$get_results()
+
+      test_names <- paste0(
+        map_chr(results, result_type),
+        ": ",
+        map_chr(results, "[[", "test")
+      )
+      choices <- set_names(seq_along(results), test_names)
+
+      updateRadioButtons(session, "failures", choices = choices)
+
       paste0("Runs: ", input$run)
     })
 
@@ -33,4 +49,8 @@ shine <- function(pkg = ".") {
   viewer <- paneViewer(300)
   runGadget(ui, server, viewer = viewer)
 
+}
+
+result_type <- function(result) {
+  toupper(substr(gsub("^expectation_", "", class(result)[[1]]), 1, 1))
 }
