@@ -22,7 +22,7 @@ ui <- miniPage(
       radioButtons("results", "Tests", choices = "No tests found"),
       radioButtons("call_stack", "Call stack", choices = "No test selected")
     ),
-    textOutput("status", inline = TRUE)
+    textOutput("message")
   )
 )
 
@@ -40,6 +40,10 @@ shine <- function(pkg = ".") {
     observe(call_stack_df <<- fill_call_stack(
       session, results, as.integer(input$results), pkg
     ))
+    output$message <- renderText(get_result_message(
+      session, results, as.integer(input$results)
+    ))
+
     observe(navigate_call_stack_entry(
       call_stack_df, as.numeric(input$call_stack)
     ))
@@ -99,9 +103,16 @@ filter_results <- function(session, results, filter, run, pkg) {
   results
 }
 
-fill_call_stack <- function(session, results, result_pos, pkg) {
+get_result <- function(results, result_pos) {
   result <- NULL
-  if (!is.na(result_pos) && result_pos != 0) result <- results[[result_pos]]
+  if (!is.na(result_pos) && is.numeric(result_pos) && result_pos != 0) {
+    result <- results[[result_pos]]
+  }
+  result
+}
+
+fill_call_stack <- function(session, results, result_pos, pkg) {
+  result <- get_result(results, result_pos)
 
   if (is.null(result)) {
     choices <- c("No result selected" = 1L)
@@ -131,6 +142,17 @@ fill_call_stack <- function(session, results, result_pos, pkg) {
   navigate_call_stack_entry(call_stack_df, 1L)
   call_stack_df
 }
+
+get_result_message <- function(session, results, result_pos) {
+  result <- get_result(results, result_pos)
+
+  if (is.null(result)) {
+    ""
+  } else {
+    result$message
+  }
+}
+
 
 navigate_call_stack_entry <- function(call_stack_df, call_stack_pos) {
   if (is.na(call_stack_pos)) return()
