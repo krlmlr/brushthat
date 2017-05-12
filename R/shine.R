@@ -26,6 +26,11 @@ ui <- miniPage(
   )
 )
 
+#' Displays a gadget that interacts with testthat
+#'
+#' Shows test results, allows navigating to failures and re-run.
+#'
+#' @param pkg The package to test
 #' @export
 shine <- function(pkg = ".") {
   pkg <- normalizePath(pkg, winslash = "/")
