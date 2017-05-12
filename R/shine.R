@@ -54,11 +54,10 @@ shine <- function(pkg = ".") {
       call_stack_df, as.numeric(input$call_stack)
     ))
 
-    # Listen for 'done' events. When we're finished, we'll
-    # insert the current time, and then stop the gadget.
     observeEvent(input$done, {
       stopApp()
     })
+    session$onSessionEnded(stopApp)
 
   }
 
