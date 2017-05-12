@@ -4,9 +4,11 @@ Version: 0.0-0
 Authors@R: person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r@mailbox.org")
 Description: What the package does (one paragraph).
 Imports:
+    devtools,
     miniUI,
     rlang,
-    shiny
+    shiny,
+    testthat
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
