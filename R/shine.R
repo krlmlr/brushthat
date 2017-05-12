@@ -159,7 +159,6 @@ get_result_message <- function(session, results, result_pos) {
   }
 }
 
-
 navigate_call_stack_entry <- function(call_stack_df, call_stack_pos) {
   if (is.na(call_stack_pos)) return()
   file_pos <- call_stack_df[call_stack_pos, , drop = FALSE]
