@@ -1,7 +1,5 @@
 # brushthat
 
-Brush up your tests!
-
 ![Showcase](assets/demo.gif)
 
 ## Installation
