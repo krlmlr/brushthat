@@ -39,7 +39,13 @@ shine <- function(pkg = ".") {
     port <- get_random_port()
     tryCatch(
       {
-        serve(pkg, port)
+        system2(
+          file.path(Sys.getenv("R_HOME"), "bin", "R"),
+          c("-q", "-e", shQuote(paste0("brushthat:::serve('", pkg, "',", port, ")"))),
+          wait = FALSE
+        )
+        Sys.sleep(10)
+        rstudioapi::viewer(paste0("http://127.0.0.1:", port), 300)
         break
       },
       error = function(e) {}
@@ -82,10 +88,7 @@ serve <- function(pkg, port) {
 
   }
 
-  # We'll use a pane viwer, and set the minimum height at
-  # 300px to ensure we get enough screen space to display the clock.
-  viewer <- paneViewer(300)
-  runApp(shinyApp(ui, server, options = list(port = port, viewer = viewer)))
+  runApp(shinyApp(ui, server, options = list(port = port, launch.browser = FALSE)))
 }
 
 result_type <- function(result) {
