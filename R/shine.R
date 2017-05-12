@@ -35,6 +35,10 @@ ui <- miniPage(
 shine <- function(pkg = ".") {
   pkg <- normalizePath(pkg, winslash = "/")
 
+  serve(pkg)
+}
+
+serve <- function(pkg) {
   server <- function(input, output, session) {
 
     run_output <- NULL
