@@ -19,7 +19,7 @@ ui <- miniPage(
       inline = TRUE
     ),
     splitLayout(
-      radioButtons("results", "Tests", choices = "No tests found"),
+      radioButtons("results", "Results", choices = "Running tests"),
       radioButtons("call_stack", "Call stack", choices = "No test selected")
     ),
     textOutput("message")
@@ -94,7 +94,7 @@ filter_results <- function(session, run_output, filter, run, pkg) {
   shown_results <- results[show_result]
 
   if (length(shown_results) == 0L) {
-    choices <- c("No results" = 0)
+    choices <- set_names(0L, paste0("Showing 0 out of ", length(results), " results"))
   } else {
     test_names <- paste0(
       map_chr(shown_results, result_type),
