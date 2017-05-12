@@ -1,0 +1,4 @@
+Name: Brush that!
+Description: Runs testthat tests in a gadget that allows navigating to the errors and much more.
+Binding: shine
+Interactive: true

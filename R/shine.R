@@ -26,6 +26,7 @@ ui <- miniPage(
   )
 )
 
+#' @export
 shine <- function(pkg = ".") {
   pkg <- normalizePath(pkg, winslash = "/")
 
