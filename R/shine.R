@@ -35,10 +35,27 @@ ui <- miniPage(
 shine <- function(pkg = ".") {
   pkg <- normalizePath(pkg, winslash = "/")
 
-  serve(pkg)
+  for (i in 1:20) {
+    port <- get_random_port()
+    tryCatch(
+      {
+        serve(pkg, port)
+        break
+      },
+      error = function(e) {}
+    )
+  }
 }
 
-serve <- function(pkg) {
+# Reject ports in this range that are considered unsafe by Chrome
+# http://superuser.com/questions/188058/which-ports-are-considered-unsafe-on-chrome
+ports <- setdiff(3000:8000, c(3659L, 4045L, 6000L, 6665:6669))
+
+get_random_port <- function() {
+  sample(ports, 1L)
+}
+
+serve <- function(pkg, port) {
   server <- function(input, output, session) {
 
     run_output <- NULL
@@ -68,8 +85,7 @@ serve <- function(pkg) {
   # We'll use a pane viwer, and set the minimum height at
   # 300px to ensure we get enough screen space to display the clock.
   viewer <- paneViewer(300)
-  runGadget(ui, server, viewer = viewer)
-
+  runApp(shinyApp(ui, server, options = list(port = port, viewer = viewer)))
 }
 
 result_type <- function(result) {
