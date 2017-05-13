@@ -12,15 +12,19 @@ ui <- miniPage(
     left = miniTitleBarButton("run", "Run test", primary = TRUE)
   ),
   miniContentPanel(
-    checkboxGroupInput(
-      "filter", "Result types",
-      set_names(names(result_types), result_types),
-      selected = names(result_types)[-1],
-      inline = TRUE
-    ),
     splitLayout(
       radioButtons("results", "Results", choices = "Running tests"),
-      radioButtons("call_stack", "Call stack", choices = "No test selected")
+      list(
+        checkboxGroupInput(
+          "filter", "Result types",
+          set_names(names(result_types), result_types),
+          selected = names(result_types)[-1],
+          inline = TRUE
+        ),
+        sliderInput("n_max", "Max # results (0: unlimited)", 0, 50, 0),
+        actionLink("shell", "Shell"),
+        radioButtons("call_stack", "Call stack", choices = "No test selected")
+      )
     ),
     textOutput("message")
   )
@@ -41,7 +45,7 @@ shine <- function(pkg = ".") {
     call_stack_df <- NULL
 
     observe(run_output <<- filter_results(
-      session, run_output, input$filter, input$run, pkg
+      session, run_output, input$filter, input$run, input$n_max, pkg
     ))
     observe(call_stack_df <<- fill_call_stack(
       session, run_output$results, as.integer(input$results), pkg
@@ -53,6 +57,8 @@ shine <- function(pkg = ".") {
     observe(navigate_call_stack_entry(
       call_stack_df, as.numeric(input$call_stack)
     ))
+
+    observeEvent(input$shell, browser())
 
     observeEvent(input$done, {
       stopApp()
@@ -84,12 +90,15 @@ get_run_output <- function(run_output, run, pkg) {
   )
 }
 
-filter_results <- function(session, run_output, filter, run, pkg) {
+filter_results <- function(session, run_output, filter, run, n_max, pkg) {
   run_output <- get_run_output(run_output, run, pkg)
   results <- run_output$results
 
   results_class <- map_chr(map(results, class), "[[", 1L)
-  show_result <- results_class %in% filter
+  show_result <- which(results_class %in% filter)
+  if (n_max > 0 && length(show_result) > n_max) {
+    show_result <- show_result[seq_len(n_max)]
+  }
   shown_results <- results[show_result]
 
   if (length(shown_results) == 0L) {
@@ -100,7 +109,7 @@ filter_results <- function(session, run_output, filter, run, pkg) {
       ": ",
       map_chr(shown_results, "[[", "test")
     )
-    choices <- set_names(which(show_result), test_names)
+    choices <- set_names(show_result, test_names)
   }
 
   updateRadioButtons(session, "results", choices = choices)
