@@ -39,10 +39,14 @@ ui <- miniPage(
 shine <- function(pkg = ".") {
   pkg <- normalizePath(pkg, winslash = "/")
 
+  initial_run_output <- filter_results(
+    NULL, NULL, character(), 0L, 0, pkg
+  )
+
   server <- function(input, output, session) {
 
-    run_output <- NULL
     call_stack_df <- NULL
+    run_output <- initial_run_output
 
     observe(run_output <<- filter_results(
       session, run_output, input$filter, input$run, input$n_max, pkg
@@ -79,7 +83,7 @@ result_type <- function(result) {
 }
 
 get_run_output <- function(run_output, run, pkg) {
-  if (identical(run, run_output$run)) return(run_output)
+  if (identical(unclass(run), unclass(run_output$run))) return(run_output)
 
   reporter <- BrushReporter$new()
   devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
@@ -112,7 +116,9 @@ filter_results <- function(session, run_output, filter, run, n_max, pkg) {
     choices <- set_names(show_result, test_names)
   }
 
-  updateRadioButtons(session, "results", choices = choices)
+  if (!is.null(session)) {
+    updateRadioButtons(session, "results", choices = choices)
+  }
 
   run_output
 }
