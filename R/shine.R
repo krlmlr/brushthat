@@ -52,14 +52,14 @@ shine <- function(pkg = ".") {
       session, run_output, input$filter, input$run, input$n_max, pkg
     ))
     observe(call_stack_df <<- fill_call_stack(
-      session, run_output$results, as.integer(input$results), pkg
+      session, run_output$results, input$results, pkg
     ))
     output$message <- renderText(get_result_message(
-      session, run_output$results, as.integer(input$results)
+      session, run_output$results, input$results
     ))
 
     observe(navigate_call_stack_entry(
-      call_stack_df, as.numeric(input$call_stack)
+      call_stack_df, input$call_stack
     ))
 
     observeEvent(input$shell, browser())
@@ -175,6 +175,7 @@ get_result_message <- function(session, results, result_pos) {
 
 navigate_call_stack_entry <- function(call_stack_df, call_stack_pos) {
   if (is.na(call_stack_pos)) return()
+  if (!is.numeric(call_stack_pos)) return()
   file_pos <- call_stack_df[call_stack_pos, , drop = FALSE]
   if (is.na(file_pos$file)) return()
   rstudioapi::navigateToFile(file_pos$file, file_pos$line, file_pos$column)
