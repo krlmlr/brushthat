@@ -30,6 +30,12 @@ get_ui <- function() {
       class = "overlay",
       h2("Updating test results...")
     ),
+    div(
+      id = "shell-overlay",
+      class = "overlay",
+      h2("Shell is active"),
+      p("Quit shell with ", HTML("<kbd>c</kbd> <kbd>Enter</kbd>"), " to continue")
+    ),
     gadgetTitleBar(
       "brushthat",
       left = miniTitleBarButton("run", "Run test", primary = TRUE)
@@ -89,7 +95,7 @@ shine <- function(pkg = ".") {
       call_stack_df, input$call_stack
     ))
 
-    observeEvent(input$shell, browser())
+    observeEvent(input$shell, show_shell())
 
     observeEvent(input$done, {
       stopApp()
@@ -214,4 +220,14 @@ navigate_call_stack_entry <- function(call_stack_df, call_stack_pos) {
   file_pos <- call_stack_df[call_stack_pos, , drop = FALSE]
   if (is.na(file_pos$file)) return()
   rstudioapi::navigateToFile(file_pos$file, file_pos$line, file_pos$column)
+}
+
+show_shell <- function() {
+  showElement(id = "shell-overlay", anim = TRUE, animType = "fade")
+  message("Entering shell, quit with c <Enter>")
+  on.exit(browser(), add = TRUE)
+  on.exit(
+    hideElement(id = "shell-overlay", anim = FALSE),
+    add = TRUE
+  )
 }
