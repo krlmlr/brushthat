@@ -1,6 +1,6 @@
 Package: brushthat
 Title: Brush up your tests!
-Version: 0.0-1
+Version: 0.0-2
 Authors@R: person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r@mailbox.org")
 Description: Implements an 'RStudio' addin that helps rerunning tests and navigating to test failures.
 Depends:
