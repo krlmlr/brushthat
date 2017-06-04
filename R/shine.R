@@ -50,7 +50,7 @@ get_ui <- function() {
             selected = names(result_types)[-1],
             inline = TRUE
           ),
-          sliderInput("n_max", "Max # results (0: unlimited)", 0, 50, 0),
+          sliderInput("n_max", "Max # visible results (0: unlimited)", 0, 50, 10),
           actionLink("shell", "Shell"),
           radioButtons("call_stack", "Call stack", choices = "No test selected")
         )
