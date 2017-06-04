@@ -7,8 +7,29 @@ result_types <- c(
 )
 
 get_ui <- function() {
+  appCSS <- "
+.overlay {
+  position: absolute;
+  background: #DDDDDD;
+  opacity: 0.9;
+  z-index: 100;
+  left: 0;
+  right: 0;
+  height: 100%;
+  text-align: center;
+  color: #000000;
+  display: none;
+}
+"
+
   ui <- miniPage(
     useShinyjs(),
+    inlineCSS(appCSS),
+    div(
+      id = "testing-overlay",
+      class = "overlay",
+      h2("Updating test results...")
+    ),
     gadgetTitleBar(
       "brushthat",
       left = miniTitleBarButton("run", "Run test", primary = TRUE)
@@ -44,6 +65,7 @@ get_ui <- function() {
 shine <- function(pkg = ".") {
   pkg <- normalizePath(pkg, winslash = "/")
 
+  message("Initializing test results")
   initial_run_output <- filter_results(
     NULL, NULL, character(), 0L, 0, pkg
   )
@@ -87,8 +109,16 @@ result_type <- function(result) {
   result_types[ class(result)[[1]] ]
 }
 
-get_run_output <- function(run_output, run, pkg) {
+get_run_output <- function(session, run_output, run, pkg) {
   if (identical(unclass(run), unclass(run_output$run))) return(run_output)
+
+  if (!is.null(session)) {
+    showElement(id = "testing-overlay", anim = TRUE, animType = "fade")
+    on.exit(
+      hideElement(id = "testing-overlay", anim = FALSE),
+      add = TRUE
+    )
+  }
 
   reporter <- BrushReporter$new()
   devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
@@ -100,7 +130,7 @@ get_run_output <- function(run_output, run, pkg) {
 }
 
 filter_results <- function(session, run_output, filter, run, n_max, pkg) {
-  run_output <- get_run_output(run_output, run, pkg)
+  run_output <- get_run_output(session, run_output, run, pkg)
   results <- run_output$results
 
   results_class <- map_chr(map(results, class), "[[", 1L)
