@@ -4,9 +4,9 @@
 \name{brushthat-package}
 \alias{brushthat}
 \alias{brushthat-package}
-\title{brushthat: What the Package Does (one line, title case)}
+\title{brushthat: Brush up your tests!}
 \description{
-What the package does (one paragraph).
+Implements an 'RStudio' addin that helps rerunning tests and navigating to test failures.
 }
 \seealso{
 Useful links:
