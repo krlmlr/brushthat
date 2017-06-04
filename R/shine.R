@@ -6,29 +6,33 @@ result_types <- c(
   expectation_warning = "\u26a0"
 )
 
-ui <- miniPage(
-  gadgetTitleBar(
-    "brushthat",
-    left = miniTitleBarButton("run", "Run test", primary = TRUE)
-  ),
-  miniContentPanel(
-    splitLayout(
-      radioButtons("results", "Results", choices = "Running tests"),
-      list(
-        checkboxGroupInput(
-          "filter", "Result types",
-          set_names(names(result_types), result_types),
-          selected = names(result_types)[-1],
-          inline = TRUE
-        ),
-        sliderInput("n_max", "Max # results (0: unlimited)", 0, 50, 0),
-        actionLink("shell", "Shell"),
-        radioButtons("call_stack", "Call stack", choices = "No test selected")
-      )
+get_ui <- function() {
+  ui <- miniPage(
+    gadgetTitleBar(
+      "brushthat",
+      left = miniTitleBarButton("run", "Run test", primary = TRUE)
     ),
-    textOutput("message")
+    miniContentPanel(
+      splitLayout(
+        radioButtons("results", "Results", choices = "Running tests"),
+        list(
+          checkboxGroupInput(
+            "filter", "Result types",
+            set_names(names(result_types), result_types),
+            selected = names(result_types)[-1],
+            inline = TRUE
+          ),
+          sliderInput("n_max", "Max # results (0: unlimited)", 0, 50, 0),
+          actionLink("shell", "Shell"),
+          radioButtons("call_stack", "Call stack", choices = "No test selected")
+        )
+      ),
+      textOutput("message")
+    )
   )
-)
+
+  ui
+}
 
 #' Displays a gadget that interacts with testthat
 #'
@@ -74,7 +78,7 @@ shine <- function(pkg = ".") {
   # We'll use a pane viwer, and set the minimum height at
   # 300px to ensure we get enough screen space to display the clock.
   viewer <- paneViewer(300)
-  runGadget(ui, server, viewer = viewer)
+  runGadget(get_ui(), server, viewer = viewer)
 
 }
 
