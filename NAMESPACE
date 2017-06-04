@@ -3,4 +3,5 @@
 export(shine)
 import(miniUI)
 import(rlang)
-import(shiny)
+import(shiny, except = runExample)
+import(shinyjs, except = runExample)

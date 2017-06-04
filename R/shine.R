@@ -8,6 +8,7 @@ result_types <- c(
 
 get_ui <- function() {
   ui <- miniPage(
+    useShinyjs(),
     gadgetTitleBar(
       "brushthat",
       left = miniTitleBarButton("run", "Run test", primary = TRUE)
