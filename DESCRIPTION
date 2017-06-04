@@ -1,0 +1,23 @@
+Package: brushthat
+Title: Brush up your tests!
+Version: 0.0-1
+Authors@R: person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r@mailbox.org")
+Description: Implements an 'RStudio' addin that helps rerunning tests and navigating to test failures.
+Depends:
+    R (>= 3.3.0)
+Imports:
+    devtools,
+    miniUI,
+    rlang,
+    rstudioapi,
+    shiny,
+    shinyjs,
+    testthat
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Date: 2017-06-04
+BugReports: https://github.com/krlmlr/brushthat/issues
+URL: https://github.com/krlmlr/brushthat, http://krlmlr.github.io/brushthat
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1
