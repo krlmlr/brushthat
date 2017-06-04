@@ -1,3 +1,8 @@
+## brushthat 0.0-2 (2017-06-04)
+
+- Show only 10 test results by default.
+
+
 ## brushthat 0.0-1 (2017-06-04)
 
 Initial release.
