@@ -1,8 +1,8 @@
 Package: brushthat
-Title: What the Package Does (one line, title case)
+Title: Brush up your tests!
 Version: 0.0-0
 Authors@R: person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r@mailbox.org")
-Description: What the package does (one paragraph).
+Description: Implements an 'RStudio' addin that helps rerunning tests and navigating to test failures.
 Depends:
     R (>= 3.3.0)
 Imports:
