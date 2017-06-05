@@ -1,3 +1,8 @@
+## brushthat 0.0-3 (2017-06-05)
+
+- Radio buttons change the current result or call stack entry, regression introduced during release of 0.0-1.
+
+
 ## brushthat 0.0-2 (2017-06-04)
 
 - Show only 10 test results by default.
