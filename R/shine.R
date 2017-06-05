@@ -166,7 +166,8 @@ filter_results <- function(session, run_output, filter, run, n_max, pkg) {
 
 get_result <- function(results, result_pos) {
   result <- NULL
-  if (!is.na(result_pos) && is.numeric(result_pos) && result_pos != 0) {
+  result_pos <- as_numeric_or_na(result_pos)
+  if (!is.na(result_pos) && result_pos != 0) {
     result <- results[[result_pos]]
   }
   result
@@ -215,6 +216,7 @@ get_result_message <- function(session, results, result_pos) {
 }
 
 navigate_call_stack_entry <- function(call_stack_df, call_stack_pos) {
+  call_stack_pos <- as_numeric_or_na(call_stack_pos)
   if (is.na(call_stack_pos)) return()
   if (!is.numeric(call_stack_pos)) return()
   file_pos <- call_stack_df[call_stack_pos, , drop = FALSE]
