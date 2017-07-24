@@ -55,7 +55,7 @@ get_ui <- function() {
           radioButtons("call_stack", "Call stack", choices = "No test selected")
         )
       ),
-      textOutput("message")
+      textOutput("message", container = htmltools::pre)
     )
   )
 
