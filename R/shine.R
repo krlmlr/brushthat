@@ -126,13 +126,18 @@ get_run_output <- function(session, run_output, run, pkg) {
     )
   }
 
-  reporter <- BrushReporter$new()
-  devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
+  results <- run_tests(pkg)
 
   list(
     run = run,
-    results = reporter$get_results()
+    results = results
   )
+}
+
+run_tests <- function(pkg) {
+  reporter <- BrushReporter$new()
+  devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
+  reporter$get_results()
 }
 
 filter_results <- function(session, run_output, filter, run, n_max, pkg) {
