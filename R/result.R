@@ -1,7 +1,3 @@
-result_type <- function(result) {
-  result_types[ class(result)[[1]] ]
-}
-
 get_run_output <- function(session, run_output, run, pkg) {
   if (identical(unclass(run), unclass(run_output$run))) return(run_output)
 
@@ -36,16 +32,15 @@ filter_results <- function(session, run_output, filter, run, n_max, pkg) {
     show_result <- show_result[seq_len(n_max)]
   }
 
-  results <- results_df$result
-  shown_results <- results[show_result]
+  shown_results_df <- results_df[show_result, ]
 
-  if (length(shown_results) == 0L) {
-    choices <- set_names(0L, paste0("Showing 0 out of ", length(results), " results"))
+  if (nrow(shown_results_df) == 0L) {
+    choices <- set_names(0L, paste0("Showing 0 out of ", nrow(results_df), " results"))
   } else {
     test_names <- paste0(
-      map_chr(shown_results, result_type),
+      result_types[shown_results_df$type],
       ": ",
-      map_chr(shown_results, "[[", "test")
+      shown_results_df$test
     )
     choices <- set_names(show_result, test_names)
   }

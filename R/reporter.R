@@ -5,6 +5,7 @@ BrushReporter <- R6::R6Class("BrushReporter", inherit = testthat::Reporter,
       private$results <- tibble(
         file = character(),
         type = character(),
+        test = character(),
         result = list()
       )
     },
@@ -18,6 +19,7 @@ BrushReporter <- R6::R6Class("BrushReporter", inherit = testthat::Reporter,
         private$results,
         file = private$current_file %||% "<unknown>",
         type = class(result)[[1]],
+        test = test,
         result = list(result)
       )
     },
