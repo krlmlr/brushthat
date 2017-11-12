@@ -9,7 +9,8 @@ get_run_output <- function(session, run_output, run, pkg) {
     )
   }
 
-  results <- run_tests(pkg)
+  filter <- get_filter_for_failing_tests(run_output)
+  results <- run_tests(pkg, filter)
 
   list(
     run = run,
@@ -17,9 +18,51 @@ get_run_output <- function(session, run_output, run, pkg) {
   )
 }
 
-run_tests <- function(pkg) {
+get_filter_for_failing_tests <- function(run_output) {
+  failing_results <- c(
+    "expectation_failure",
+    "expectation_error",
+    "expectation_warning"
+  )
+
+  if (is.null(run_output)) {
+    message("First test, running all tests")
+    return(NULL)
+  }
+
+  results_df <- run_output$results
+
+  failing_results_df <- results_df[results_df$type %in% failing_results, ]
+  if (nrow(failing_results_df) == 0) {
+    message("No previously failing tests found, running all tests")
+    return(NULL)
+  }
+
+  if (anyNA(failing_results_df$file)) {
+    message("File information not available for some tests, running all tests")
+    return(NULL)
+  }
+
+  test_file_names <- unique(basename(failing_results_df$file))
+  test_rx <- "^test-(.*)[.][rR]$"
+
+  matches_test_pattern <- grepl(test_rx, test_file_names)
+  if (!all(matches_test_pattern)) {
+    message(
+      "File information wrong for ",
+      commas(test_file_names[!matches_test_pattern]),
+      ", running all tests")
+    return(NULL)
+  }
+
+  test_names <- gsub(test_rx, "\\1", test_file_names)
+  message("Rerunning tests for ", commas(test_names))
+  paste(glob2rx(test_names), collapse = "|")
+}
+
+run_tests <- function(pkg, filter = NULL) {
   reporter <- BrushReporter$new()
-  devtools::test(pkg = pkg, reporter = reporter, quiet = TRUE)
+  devtools::test(pkg = pkg, filter = filter, reporter = reporter)
   reporter$get_results()
 }
 
