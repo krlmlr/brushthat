@@ -142,7 +142,7 @@ run_tests <- function(pkg) {
 
 filter_results <- function(session, run_output, filter, run, n_max, pkg) {
   run_output <- get_run_output(session, run_output, run, pkg)
-  results <- run_output$results
+  results <- run_output$results$result
 
   results_class <- map_chr(map(results, class), "[[", 1L)
   show_result <- which(results_class %in% filter)
@@ -173,7 +173,7 @@ get_result <- function(results, result_pos) {
   result <- NULL
   result_pos <- as_numeric_or_na(result_pos)
   if (!is.na(result_pos) && result_pos != 0) {
-    result <- results[[result_pos]]
+    result <- results$result[[result_pos]]
   }
   result
 }
