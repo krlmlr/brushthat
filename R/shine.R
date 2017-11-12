@@ -144,7 +144,7 @@ filter_results <- function(session, run_output, filter, run, n_max, pkg) {
   run_output <- get_run_output(session, run_output, run, pkg)
   results <- run_output$results$result
 
-  results_class <- map_chr(map(results, class), "[[", 1L)
+  results_class <- run_output$results$type
   show_result <- which(results_class %in% filter)
   if (n_max > 0 && length(show_result) > n_max) {
     show_result <- show_result[seq_len(n_max)]
