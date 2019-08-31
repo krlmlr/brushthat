@@ -7,9 +7,7 @@ fill_call_stack <- function(session, results, result_pos, pkg) {
     lines <- NA_integer_
     columns <- NA_integer_
   } else {
-    srcrefs <- lapply(result$call, attr, "srcref")
-    has_ref <- map_lgl(srcrefs, inherits, "srcref")
-    valid_srcrefs <- srcrefs[has_ref]
+    valid_srcrefs <- list(result$srcref)
     files <- map_chr(valid_srcrefs, function(x) attr(x, "srcfile")$filename)
     files <- gsub(paste0(pkg, "/"), "", files)
     lines <- map_int(valid_srcrefs, function(x) as.vector(x)[1])

@@ -12,7 +12,7 @@ Imports:
     rstudioapi,
     shiny,
     shinyjs,
-    testthat,
+    testthat (>= 2.1.0),
     tibble
 License: GPL-3
 Encoding: UTF-8
