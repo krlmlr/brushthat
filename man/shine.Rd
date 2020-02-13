@@ -4,10 +4,7 @@
 \alias{shine}
 \title{Displays a gadget that interacts with testthat}
 \usage{
-shine(pkg = ".")
-}
-\arguments{
-\item{pkg}{The package to test}
+shine(remote = TRUE, pkg = NULL)
 }
 \description{
 Shows test results, allows navigating to failures and re-run.

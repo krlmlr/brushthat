@@ -39,6 +39,8 @@ get_result_message <- function(session, results, result_pos) {
 }
 
 navigate_call_stack_entry <- function(call_stack_df, call_stack_pos) {
+  if (!rstudioapi::isAvailable()) return()
+
   call_stack_pos <- as_numeric_or_na(call_stack_pos)
   if (is.na(call_stack_pos)) return()
   if (!is.numeric(call_stack_pos)) return()

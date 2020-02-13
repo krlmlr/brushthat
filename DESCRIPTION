@@ -6,6 +6,7 @@ Description: Implements an 'RStudio' addin that helps rerunning tests and naviga
 Depends:
     R (>= 3.3.0)
 Imports:
+    callr,
     devtools,
     miniUI,
     rlang,
@@ -13,7 +14,9 @@ Imports:
     shiny,
     shinyjs,
     testthat (>= 2.1.0),
-    tibble
+    tibble,
+    usethis,
+    withr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -21,4 +24,4 @@ Date: 2017-06-05
 BugReports: https://github.com/krlmlr/brushthat/issues
 URL: https://github.com/krlmlr/brushthat, http://krlmlr.github.io/brushthat
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.0.1
+RoxygenNote: 7.0.2
